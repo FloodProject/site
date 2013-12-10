@@ -1,0 +1,8 @@
+name = Flood Project
+description = Provides Package nodes.
+core = 7.x
+
+dependencies[] = forum
+dependencies[] = og
+dependencies[] = blog
+dependencies[] = project

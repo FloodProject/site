@@ -1,0 +1,125 @@
+<?php
+/**
+* @file
+* A description of what your module does.
+*/
+
+require_once "Flood.php";
+
+/**
+ * Implements hook_node_info().
+ *
+ * We use hook_node_info() to define our node content type.
+ */
+function FloodProject_node_info() {
+
+    //Make content type an organic group
+    variable_set('og_group_type_' . Flood::PACKAGE_NODE_TYPE, TRUE);
+
+    return array(
+        Flood::PACKAGE_NODE_TYPE => array(
+            'name' => t('Package'),
+            // 'base' tells Drupal the base string for hook functions.
+            'base' => 'node_content',
+            'description' => t('This node represents a flood package'),
+            'title_label' => t('Flood Package'),
+            // We'll set the 'locked' attribute to TRUE, so users won't be
+            // able to change the machine name of our content type.
+            'locked' => TRUE,
+        ),
+    );
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function FloodProject_node_presave($node)
+{
+    if($node->type != Flood::PACKAGE_NODE_TYPE)
+        return;
+
+    if(FloodContentType::has_content_type($node, FloodContentType::Blog))
+    {
+
+    }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function FloodProject_menu() {
+    $items['package/%'] = array(
+        'page callback' => 'FloodProject_package_view',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+    );
+
+    /*$items['package/%currentpackage/docs/%'] = array(
+        'page callback' => 'FloodProject_docs_view',
+        'page arguments' => array(1,2),
+    );*/
+
+    $items['package/[current-group]/docs'] = array(
+        'title' => 'Docs',
+        'page callback' => 'FloodProject_docs_view',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+        'menu_name' => 'main-menu'
+    );
+
+    $items['package/[current-group]/forums'] = array(
+        'title' => 'Forums',
+        'page callback' => 'FloodProject_forums_view',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+        'menu_name' => 'main-menu'
+    );
+
+    $items['package/[current-group]/blog'] = array(
+        'title' => 'Blog',
+        'page callback' => 'FloodProject_blog_view',
+        'page arguments' => array(1),
+        'access callback' => TRUE,
+        'type' => MENU_NORMAL_ITEM,
+        'menu_name' => 'main-menu',
+        'access arguments' => array('access content'),
+    );
+
+    return $items;
+}
+
+function currentpackage_load($arg) {
+    if ($arg)
+        return $arg;
+
+    return "sdf";
+}
+
+function curr_to_arg($arg) {
+    if ($arg)
+        return $arg;
+
+    return "sdf";
+}
+
+function FloodProject_pac($package) {
+    return "Welcome to package " . $package;
+}
+
+function FloodProject_package_view($package) {
+    return "Welcome to package " . $package;
+}
+
+function FloodProject_docs_view($package, $path) {
+    return "Welcome to package " . $package . " doc " . $path;
+}
+
+function FloodProject_forums_view($package) {
+    return "Welcome to package " . $package . " forums";
+}
+
+function FloodProject_blog_view($package) {
+    return "Welcome to package " . $package . " blog";
+}
