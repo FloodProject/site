@@ -1,4 +1,16 @@
-drupal/*
 
-!drupal/sites/all/modules/FloodProject/*
-!drupal/sites/all/themes/FloodTheme/*
+drupal/*
+!drupal/sites
+
+drupal/sites/*
+!drupal/sites/all
+
+drupal/sites/all/*
+!drupal/sites/all/modules
+!drupal/sites/all/themes
+
+drupal/sites/all/modules/*
+!drupal/sites/all/modules/FloodProject
+
+drupal/sites/all/themes/*
+!drupal/sites/all/themes/FloodTheme
