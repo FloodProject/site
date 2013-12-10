@@ -1,4 +1,4 @@
 drupal/*
 
 !drupal/sites/all/modules/FloodProject/*
-!drupal/sites/all/modules/FloodTheme/*
+!drupal/sites/all/themes/FloodTheme/*
