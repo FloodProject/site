@@ -1,6 +1,7 @@
 
 drupal/*
 !drupal/sites
+!drupal/.htaccess
 
 drupal/sites/*
 !drupal/sites/all
