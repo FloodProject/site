@@ -28,7 +28,10 @@ class FloodContentType
         if($node->type != Flood::PACKAGE_NODE_TYPE)
             return false;
 
-        return array_key_exists ($content_type ,$node->{Flood::CONTENT_TYPE_FIELD});
+        if(empty($node->{Flood::CONTENT_TYPE_FIELD}))
+            return false;
+
+        return in_array($content_type ,$node->{Flood::CONTENT_TYPE_FIELD}['und'][0]);
     }
 }
 
