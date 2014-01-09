@@ -100,9 +100,9 @@ function FloodProject_menu()
     $items['download'] = create_menu_item('Download', 'download', 'main-menu');
     $items['docs'] = create_menu_item('Docs', 'docs', 'main-menu');
 
-    $items['node/%/docs'] = create_menu_item('', 'module_docs');
-    $items['node/%/forum'] = create_menu_item('', 'module_forum');
-    $items['node/%/news'] = create_menu_item('', 'module_news');
+    $items['node/%/docs'] = create_menu_item('', 'docs');
+    $items['node/%/forum'] = create_menu_item('', 'forum');
+    $items['node/%/news'] = create_menu_item('', 'news');
 
     return $items;
 }
@@ -198,6 +198,8 @@ function get_link($menu_name, $plid ,$title)
 function FloodProject_package_docs_view($package) {
     return "Welcome to package " . $package . " docs ";
 }
+
+
 
 
 /*
