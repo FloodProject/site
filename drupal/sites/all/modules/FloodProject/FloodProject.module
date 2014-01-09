@@ -5,6 +5,7 @@
 */
 
 require_once "Flood.php";
+require_once "helpers.php";
 
 /**
  * Implements hook_node_info().
