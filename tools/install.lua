@@ -7,7 +7,7 @@ site_name = "Flood";
 site_user = "admin";
 site_pswd = "admin";
 
-theme_name = "FloodTheme";
+theme_name = "bootstrap";
 
 --List of modules to download and enable
 dl_modules = { 
