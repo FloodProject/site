@@ -27,7 +27,6 @@ function FloodProject_install() {
         field_create_instance($instance);
     }
 
-    create_package_menu();
 }
 
 /**
@@ -78,8 +77,6 @@ function FloodProject_uninstall() {
     // Purge all field infromation
     // http://api.drupal.org/api/function/field_purge_batch/7
     field_purge_batch(1000);
-
-    delete_package_menu();
 }
 
 /**
