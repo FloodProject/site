@@ -11,11 +11,18 @@ require_once "Flood.php";
  *
  * We use hook_node_info() to define our node content type.
  */
-function FloodProject_node_info() {
-
+function FloodProject_node_info()
+{
     //Make content type an organic group
-    variable_set('og_group_type_' . Flood::PACKAGE_NODE_TYPE, TRUE);
-
+	og_create_field(OG_GROUP_FIELD, 'node', Flood::PACKAGE_NODE_TYPE);
+	
+	$og_field = og_fields_info(OG_AUDIENCE_FIELD);
+    $og_field['field']['target_type'] = "node";
+    $og_field['field']['settings']['handler_settings']['target_bundles'] = array( Flood::PACKAGE_NODE_TYPE );
+	
+    og_create_field(OG_AUDIENCE_FIELD, 'node', "blog", $og_field);
+	og_create_field(OG_AUDIENCE_FIELD, 'node', "forum", $og_field);
+	
     return array(
         Flood::PACKAGE_NODE_TYPE => array(
             'name' => t('Package'),
@@ -30,96 +37,198 @@ function FloodProject_node_info() {
     );
 }
 
-/**
- * Implements hook_node_presave().
- */
-function FloodProject_node_presave($node)
+function active_module($node = '')
 {
-    if($node->type != Flood::PACKAGE_NODE_TYPE)
+    static $active_module;
+    if(!empty($node))
+    {
+        og_context('node', $node);
+        $active_module = $node;
+    }
+
+    return $active_module;
+}
+
+function FloodProject_get_url_nid($url)
+{
+    $matches = array();
+    if(preg_match("#^node/(?P<nid>[0-9]+)#", $url, $matches))
+        return $matches['nid'];
+}
+
+function FloodProject_init()
+{
+    $nid = FloodProject_get_url_nid(current_path());
+    if(empty($nid))
         return;
 
-    if(FloodContentType::has_content_type($node, FloodContentType::Blog))
-    {
+    active_module(node_load($nid));
+}
 
+function FloodProject_preprocess(&$variables, $hook)
+{
+    if (active_module())
+    {
+        $variables['module_menu'] = FloodProject_get_active_module_tree();
+        $variables['module_title'] = active_module()->title;
+        $variables['module_install_link'] = "modstir://megamodule";
     }
 }
 
-/**
- * Implements hook_menu().
- */
-function FloodProject_menu() {
-    $items['package/%'] = array(
-        'page callback' => 'FloodProject_package_view',
-        'page arguments' => array(1),
-        'access callback' => TRUE,
-    );
+function FloodProject_get_active_module_tree()
+{
+    $module_href = "node/" . active_module()->nid;
+    $tree = menu_tree_all_data(OG_MENU_SINGLE_MENU_NAME);
+    foreach ($tree as $menu)
+    {
+        if(empty($menu['link']['href']))
+            continue;
 
-    /*$items['package/%currentpackage/docs/%'] = array(
-        'page callback' => 'FloodProject_docs_view',
-        'page arguments' => array(1,2),
-    );*/
+        if(strcmp($module_href,$menu['link']['href']) == 0)
+            return menu_tree_output($menu['below']);
+    }
 
-    $items['package/[current-group]/docs'] = array(
-        'title' => 'Docs',
-        'page callback' => 'FloodProject_docs_view',
-        'page arguments' => array(1),
-        'access callback' => TRUE,
-        'type' => MENU_NORMAL_ITEM,
-        'menu_name' => 'main-menu'
-    );
+    return null;
+}
 
-    $items['package/[current-group]/forums'] = array(
-        'title' => 'Forums',
-        'page callback' => 'FloodProject_forums_view',
-        'page arguments' => array(1),
-        'access callback' => TRUE,
-        'type' => MENU_NORMAL_ITEM,
-        'menu_name' => 'main-menu'
-    );
+function FloodProject_menu()
+{
+    $items = array();
 
-    $items['package/[current-group]/blog'] = array(
-        'title' => 'Blog',
-        'page callback' => 'FloodProject_blog_view',
-        'page arguments' => array(1),
-        'access callback' => TRUE,
-        'type' => MENU_NORMAL_ITEM,
-        'menu_name' => 'main-menu',
-        'access arguments' => array('access content'),
-    );
+    $items['browse'] = create_menu_item('Browse', 'browse', 'main-menu');
+    $items['news'] = create_menu_item('News', 'news', 'main-menu');
+    $items['download'] = create_menu_item('Download', 'download', 'main-menu');
+    $items['docs'] = create_menu_item('Docs', 'docs', 'main-menu');
+
+    $items['node/%/docs'] = create_menu_item('', 'module_docs');
+    $items['node/%/forum'] = create_menu_item('', 'module_forum');
+    $items['node/%/news'] = create_menu_item('', 'module_news');
 
     return $items;
 }
 
-function currentpackage_load($arg) {
-    if ($arg)
-        return $arg;
-
-    return "sdf";
+function FloodProject_load_view($view)
+{
+    ob_start();
+    include 'views/'.$view.'.php';
+    return ob_get_clean();
 }
 
-function curr_to_arg($arg) {
-    if ($arg)
-        return $arg;
+function create_menu_item($title, $view, $menu = '')
+{
+    static $weigth = 0;
 
-    return "sdf";
+    return array(
+        'title' => $title,
+        'page callback' => 'FloodProject_load_view',
+        'page arguments' => array($view),
+        'weight' => $weigth++,
+        'menu_name' => $menu,
+        'access callback' => TRUE,
+    );
 }
 
-function FloodProject_pac($package) {
-    return "Welcome to package " . $package;
+function FloodProject_node_update($node)
+{
+    update_package_menu($node);
 }
 
-function FloodProject_package_view($package) {
-    return "Welcome to package " . $package;
+function FloodProject_menu_link_insert($item)
+{
+    if($item['menu_name'] != OG_MENU_SINGLE_MENU_NAME || $item['plid'] != 0)
+        return;
+
+    $nid = FloodProject_get_url_nid($item['link_path']);
+    if(!empty($nid))
+        update_package_menu(node_load($nid));
 }
 
-function FloodProject_docs_view($package, $path) {
-    return "Welcome to package " . $package . " doc " . $path;
+function update_package_menu($node)
+{
+    if($node->type != Flood::PACKAGE_NODE_TYPE)
+        return;
+
+    $plid = get_link(OG_MENU_SINGLE_MENU_NAME, 0, $node->title);
+
+    $has_blog = FloodContentType::has_content_type($node, FloodContentType::Blog);
+
+    $blog_link =  array(
+        'link_title' => 'Blog',
+        'link_path' => 'node/' . $node->nid . '/blog',
+        'weight' => 1,
+    );
+    update_package_link($blog_link, $plid, $has_blog);
+
+    $docs_link =  array(
+        'link_title' => 'Docs',
+        'link_path' => 'node/' . $node->nid . '/docs',
+        'weight' => 2,
+    );
+    update_package_link($docs_link, $plid);
 }
 
-function FloodProject_forums_view($package) {
-    return "Welcome to package " . $package . " forums";
+function update_package_link($link, $plid, $should_have_link = true)
+{
+    $link['plid'] = $plid;
+    $link['mlid'] = get_link(OG_MENU_SINGLE_MENU_NAME, $link['plid'], $link['link_title']);
+
+    if($should_have_link)
+    {
+        $link0 = array(
+            'menu_name' => OG_MENU_SINGLE_MENU_NAME,
+        );
+        $link = array_merge($link0, $link);
+        menu_link_save($link);
+    }
+    else
+    {
+        menu_link_delete($link['mlid']);
+    }
 }
 
-function FloodProject_blog_view($package) {
-    return "Welcome to package " . $package . " blog";
+function get_link($menu_name, $plid ,$title)
+{
+    $links = menu_load_links($menu_name);
+    foreach ($links as $link) {
+        if($link['plid'] == $plid && $link['link_title'] == $title)
+            return $link['mlid'];
+    }
+}
+
+function FloodProject_package_docs_view($package) {
+    return "Welcome to package " . $package . " docs ";
+}
+
+
+/*
+ * Web Services
+ */
+
+function FloodProject_xmlrpc()
+{
+    $methods[] = array(
+        'FloodProject.get_package_download_link',
+        '_FloodProject_get_package_download_link',
+        array('string' /*return link*/, 'string' /*package id*/, 'string' /*package version*/),
+        t('Return the package download link.'),
+    );
+
+    $methods[] = array(
+        'FloodProject.get_package_dependencies',
+        '_FloodProject_get_package_dependencies',
+        array('array' /*return dependencies*/, 'string' /*package id*/, 'string' /*package version*/),
+        t('Return the package dependencies.'),
+    );
+
+    return $methods;
+}
+
+function _FloodProject_get_package_download_link($packageId, $packageVersion)
+{
+
+}
+
+function _FloodProject_get_package_dependencies($packageId, $packageVersion)
+{
+
 }
