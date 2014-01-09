@@ -130,8 +130,16 @@
 				<a class="name navbar-brand">
 					<?php print $module_title; ?>
 				</a>
+				
+				<!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".module-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
 			</div>
-			<div class="navbar-collapse collapse">
+			<div class="navbar-collapse collapse module-collapse">
 				<nav role="navigation">
 					<button type="button" class="btn btn-default navbar-btn btn-sm navbar-left" onclick="installModule()">
 						<span class="glyphicon glyphicon-download"></span>
