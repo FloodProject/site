@@ -197,8 +197,6 @@ function get_link($menu_name, $plid ,$title)
     }
 }
 
-function FloodProject_package_docs_view($package) {
-    return "Welcome to package " . $package . " docs ";
 }
 
 
