@@ -197,6 +197,12 @@ function get_link($menu_name, $plid ,$title)
     }
 }
 
+function FloodProject_form_alter(&$form, $form_state, $form_id) {
+    //Sets node default organic group audience
+    if (isset($_REQUEST['modid'])) {
+        $form['og_group_ref']['und'][0]['default']['#default_value'][] = $_REQUEST['modid'];
+    }
+    return $form;
 }
 
 
