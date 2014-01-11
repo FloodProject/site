@@ -115,13 +115,25 @@
 
 <?php if (!empty($module_nav)):?>
 	<script>
-		function installModule(){
-		  document.location = '<?php print $module_install_link ?>';
-		  setTimeout(function(){
-			if(confirm('You do not seem to have ModStir installed, do you want to go download it now?')){
-			  document.location = '<?php print url("download") ?>';
-			}
-		  }, 300);
+	    var timeout;
+		function preventDownload() {
+			clearTimeout(timeout);
+			timeout = null;
+			window.removeEventListener('blur', preventDownload);
+		}
+		function downloadModStir() {
+			window.addEventListener('blur', preventDownload);
+			timeout = setTimeout(function (){
+				jQuery('#main-container').prepend(
+				"<?php 
+					$output = bootstrap_render_message("warning", 
+					"It seems you do not have ModStir installed, <a href=\"".url("download")."\">download it here</a>.");
+					
+					$output = preg_replace('~[\r\n]+~', '', $output);
+				
+					print addslashes($output);
+				?>");
+			}, 300);
 		}
 	</script>
 	<header class="navbar container navbar-default" role="navigation">
@@ -141,9 +153,9 @@
 			</div>
 			<div class="navbar-collapse collapse module-collapse">
 				<nav role="navigation">
-					<button type="button" class="btn btn-default navbar-btn btn-sm navbar-left" onclick="installModule()">
+					<a class="navbar-text navbar-left" onclick="downloadModStir()" href="<?php print $module_install_link ?>">
 						<span class="glyphicon glyphicon-download"></span>
-					</button>
+					</a>
 					<?php print render($module_nav); ?>
 				</nav>
 			</div>
@@ -151,8 +163,8 @@
 	</header>
 <?php endif; ?>
 
-<div class="main-container container">
-
+<div id="main-container" class="main-container container">
+  
   <header role="banner" id="page-header">
     <?php if (!empty($site_slogan)): ?>
       <p class="lead"><?php print $site_slogan; ?></p>
