@@ -40,3 +40,12 @@ function modstir_render_nids($nids)
 
     return  drupal_render($content) . drupal_render($pager);
 }
+
+function starts_with($haystack, $needle)
+{
+    return $needle === "" || strpos($haystack, $needle) === 0;
+}
+function ends_with($haystack, $needle)
+{
+    return $needle === "" || substr($haystack, -strlen($needle)) === $needle;
+}
