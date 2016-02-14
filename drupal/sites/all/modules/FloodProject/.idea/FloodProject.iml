@@ -8,10 +8,28 @@
       <library name="PHP">
         <CLASSES>
           <root url="file://$MODULE_DIR$/../../../../modules" />
+          <root url="file://$MODULE_DIR$/../entityreference" />
+          <root url="file://$MODULE_DIR$/../og_menu_single" />
+          <root url="file://$MODULE_DIR$/../admin_menu" />
+          <root url="file://$MODULE_DIR$/../entity" />
+          <root url="file://$MODULE_DIR$/../og" />
+          <root url="file://$MODULE_DIR$/../views_bulk_operations" />
+          <root url="file://$MODULE_DIR$/../ctools" />
+          <root url="file://$MODULE_DIR$/../views" />
+          <root url="file://$MODULE_DIR$/../devel" />
           <root url="file://$MODULE_DIR$/../../../../includes" />
         </CLASSES>
         <SOURCES>
           <root url="file://$MODULE_DIR$/../../../../modules" />
+          <root url="file://$MODULE_DIR$/../entityreference" />
+          <root url="file://$MODULE_DIR$/../og_menu_single" />
+          <root url="file://$MODULE_DIR$/../admin_menu" />
+          <root url="file://$MODULE_DIR$/../entity" />
+          <root url="file://$MODULE_DIR$/../og" />
+          <root url="file://$MODULE_DIR$/../views_bulk_operations" />
+          <root url="file://$MODULE_DIR$/../ctools" />
+          <root url="file://$MODULE_DIR$/../views" />
+          <root url="file://$MODULE_DIR$/../devel" />
           <root url="file://$MODULE_DIR$/../../../../includes" />
         </SOURCES>
       </library>

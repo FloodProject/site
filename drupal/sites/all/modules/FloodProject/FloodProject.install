@@ -31,7 +31,7 @@ function FloodProject_install() {
         'link_title' => 'Login',
         'link_path' => 'user/login',
         'weight' => 1,
-        'menu_name' => 'menu_secondary',
+        'menu_name' => 'user-menu',
     );
     menu_link_save($link);
 }

@@ -1,17 +1,14 @@
-<?php
+   <?php
 
-$docs_dir = "C:\\docs";
+$docs_dir = "C:/Development/flood2/build/vs2012/docs";
+$docs_file = isset($_REQUEST['d']) ? $_REQUEST['d'] : "index.html";
 
-if(isset($_REQUEST['d']))
+$doc_file = realpath ($docs_dir . DIRECTORY_SEPARATOR . $docs_file);
+if(starts_with($doc_file, realpath($docs_dir)))
 {
-    $doc_file = realpath ($docs_dir . DIRECTORY_SEPARATOR . $_REQUEST['d']);
-    if(starts_with($doc_file, $docs_dir))
-    {
-        include $doc_file;
-        goto end;
-    }
+    include $doc_file;
 }
-
-print "No docs found.";
-
-end:
+else
+{
+    print "No docs found.";
+}

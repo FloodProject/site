@@ -74,6 +74,7 @@ function FloodProject_preprocess(&$variables, $hook)
         $variables['module_menu'] = FloodProject_get_active_module_tree();
         $variables['module_title'] = active_module()->title;
         $variables['module_install_link'] = "modstir://megamodule";
+        $variables['title'] = "";
     }
 }
 
@@ -227,6 +228,13 @@ function FloodProject_xmlrpc()
         array('array' /*return dependencies*/, 'string' /*package id*/, 'string' /*package version*/),
         t('Return the package dependencies.'),
     );
+	
+	$methods[] = array(
+        'FloodProject.authenticate_user',
+        '_FloodProject_authenticate_user',
+        array('boolean' /*return success*/, 'string' /*username*/, 'string' /*password*/),
+        t('Tries to authenticate a user.'),
+    );
 
     return $methods;
 }
@@ -238,5 +246,13 @@ function _FloodProject_get_package_download_link($packageId, $packageVersion)
 
 function _FloodProject_get_package_dependencies($packageId, $packageVersion)
 {
+	
+}
 
+require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+
+function _FloodProject_authenticate_user($username, $password)
+{
+	$account = user_load_by_name($username);
+	return user_check_password($password, $account);
 }
